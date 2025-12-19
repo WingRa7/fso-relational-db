@@ -9,7 +9,7 @@ router.get("/", async (req, res) => {
   res.json(blogs);
 });
 
-router.post("/", async (req, res) => {
+router.post("/", async (req, res, next) => {
   try {
     const blog = await Blog.create(req.body);
     return res.json(blog);
@@ -32,7 +32,7 @@ router.get("/:id", blogFinder, async (req, res) => {
   }
 });
 
-router.put("/:id", blogFinder, async (req, res) => {
+router.put("/:id", blogFinder, async (req, res, next) => {
   if (req.blog) {
     req.blog.likes = req.body.likes;
     await req.blog.save();
