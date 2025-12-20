@@ -8,17 +8,13 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  try {
-    const { username, name, password } = req.body;
+  const { username, name, password } = req.body;
 
-    const passwordHash = await bcrypt.hash(password, 10);
-    const newUser = { username, name, passwordHash };
+  const passwordHash = await bcrypt.hash(password, 10);
+  const newUser = { username, name, passwordHash };
 
-    const savedUser = await User.create(newUser);
-    res.status(201).json({ username, name });
-  } catch (error) {
-    return res.status(400).json({ error });
-  }
+  const savedUser = await User.create(newUser);
+  res.status(201).json({ username, name });
 });
 
 router.get("/:id", async (req, res) => {
