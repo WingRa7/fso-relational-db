@@ -29,7 +29,6 @@ router.post("/", async (req, res) => {
   if (!decodedToken.id) {
     return res.status(401).json({ error: "token invalid" });
   }
-  console.log("decodedToken:", decodedToken);
   const user = await User.findByPk(decodedToken.id);
 
   const blog = await Blog.create({ ...req.body, userId: user.id });
@@ -61,13 +60,25 @@ router.put("/:id", blogFinder, async (req, res) => {
 });
 
 router.delete("/:id", blogFinder, async (req, res) => {
-  if (req.blog) {
-    await req.blog.destroy();
-    console.log(req.blog.toJSON());
-    return res.status(204).end();
-  } else {
-    res.status(404).end();
+  const decodedToken = jwt.verify(getTokenFrom(req), SECRET);
+  if (!decodedToken.id) {
+    return res.status(401).json({ error: "token invalid" });
   }
+  const user = await User.findByPk(decodedToken.id);
+
+  if (!req.blog) {
+    return res.status(404).json({ error: "blog was not found" });
+  }
+
+  if (req.blog.userId !== user.id) {
+    return res
+      .status(403)
+      .json({ error: "only the creator of the blog can delete" });
+  }
+
+  await req.blog.destroy();
+  console.log(req.blog.toJSON());
+  return res.status(204).end();
 });
 
 module.exports = router;
