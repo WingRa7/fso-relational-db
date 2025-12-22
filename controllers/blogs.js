@@ -29,6 +29,7 @@ router.get("/", async (req, res) => {
       attributes: { exclude: ["passwordHash", "createdAt", "updatedAt"] },
     },
     where,
+    order: [["likes", "DESC"]],
   });
 
   console.log(JSON.stringify(blogs, null, 2));
