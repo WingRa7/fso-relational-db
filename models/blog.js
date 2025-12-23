@@ -27,11 +27,22 @@ Blog.init(
       type: DataTypes.INTEGER,
       defaultValue: 0,
     },
+    year: {
+      type: DataTypes.INTEGER,
+      validate: {
+        min: { args: 1991, msg: "Year cannot be earlier than 1991" },
+        isNotFutureYear(value) {
+          if (value > new Date().getFullYear()) {
+            throw new Error("Year cannot be later than this year");
+          }
+        },
+      },
+    },
   },
   {
     sequelize,
     underscored: true,
-    timestamps: false,
+    timestamps: true,
     modelName: "blog",
   }
 );
