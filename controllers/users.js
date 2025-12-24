@@ -24,6 +24,25 @@ router.post("/", async (req, res) => {
 });
 
 router.get("/:id", async (req, res) => {
+  console.log("req.query.read:", req.query.read);
+
+  let where = { userId: req.params.id };
+
+  if (req.query.read) {
+    switch (req.query.read) {
+      case "true":
+        where.read = true;
+        break;
+      case "false":
+        where.read = false;
+        break;
+      default:
+        return res
+          .status(400)
+          .json({ error: "read status must be true or false" });
+    }
+  }
+
   const user = await User.findByPk(req.params.id, {
     attributes: { exclude: ["id", "createdAt", "updatedAt"] },
     include: [
@@ -41,7 +60,7 @@ router.get("/:id", async (req, res) => {
             model: UserBlogs,
             as: "readinglists",
             attributes: ["id", "read"],
-            where: { userId: req.params.id },
+            where,
           },
         ],
       },
