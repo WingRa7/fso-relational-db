@@ -24,7 +24,22 @@ router.post("/", async (req, res) => {
 });
 
 router.get("/:id", async (req, res) => {
-  const user = await User.findByPk(req.params.id);
+  const user = await User.findByPk(req.params.id, {
+    attributes: { exclude: ["id", "createdAt", "updatedAt"] },
+    include: [
+      {
+        model: Blog,
+        as: "reading_list",
+        attributes: {
+          exclude: ["userId", "user_blogs", "createdAt", "updatedAt"],
+        },
+        through: {
+          attributes: [],
+        },
+      },
+    ],
+  });
+
   if (user) {
     res.json({
       id: user.id,
@@ -32,6 +47,7 @@ router.get("/:id", async (req, res) => {
       name: user.name,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
+      readingList: user.reading_list,
     });
   } else {
     res.status(404).end();
