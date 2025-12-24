@@ -52,7 +52,7 @@ router.get("/:id", async (req, res) => {
     res.json({
       username: user.username,
       name: user.name,
-      readingList: user.readings,
+      readings: user.readings,
     });
   } else {
     res.status(404).end();
