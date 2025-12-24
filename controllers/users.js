@@ -1,6 +1,6 @@
 const bcrypt = require("bcrypt");
 const router = require("express").Router();
-const { User, Blog } = require("../models");
+const { User, Blog, UserBlogs } = require("../models");
 
 router.get("/", async (req, res) => {
   const users = await User.findAll({
@@ -29,25 +29,30 @@ router.get("/:id", async (req, res) => {
     include: [
       {
         model: Blog,
-        as: "reading_list",
+        as: "readings",
         attributes: {
-          exclude: ["userId", "user_blogs", "createdAt", "updatedAt"],
+          exclude: ["userId", "createdAt", "updatedAt"],
         },
         through: {
           attributes: [],
         },
+        include: [
+          {
+            model: UserBlogs,
+            as: "readinglists",
+            attributes: ["id", "read"],
+            where: { userId: req.params.id },
+          },
+        ],
       },
     ],
   });
 
   if (user) {
     res.json({
-      id: user.id,
       username: user.username,
       name: user.name,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-      readingList: user.reading_list,
+      readingList: user.readings,
     });
   } else {
     res.status(404).end();
