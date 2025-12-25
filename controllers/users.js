@@ -24,8 +24,6 @@ router.post("/", async (req, res) => {
 });
 
 router.get("/:id", async (req, res) => {
-  console.log("req.query.read:", req.query.read);
-
   let where = { userId: req.params.id };
 
   if (req.query.read) {
